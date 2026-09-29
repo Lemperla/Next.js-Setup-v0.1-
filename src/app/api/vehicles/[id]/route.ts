@@ -2,14 +2,15 @@ import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { NextRequest, NextResponse } from "next/server";
 
 // Fahrzeug bearbeiten
-export async function PATCH(request: NextRequest, { params }: { params: { id: string } }) {
+export async function PATCH(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const supabase = await createServerSupabaseClient();
+  const { id } = await params;
   const body = await request.json();
 
   const { data, error } = await supabase
     .from("vehicles")
     .update(body)
-    .eq("id", params.id)
+    .eq("id", id)
     .select()
     .single();
 
@@ -21,10 +22,11 @@ export async function PATCH(request: NextRequest, { params }: { params: { id: st
 }
 
 // Fahrzeug löschen
-export async function DELETE(_request: NextRequest, { params }: { params: { id: string } }) {
+export async function DELETE(_request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
   const supabase = await createServerSupabaseClient();
 
-  const { error } = await supabase.from("vehicles").delete().eq("id", params.id);
+  const { error } = await supabase.from("vehicles").delete().eq("id", id);
 
   if (error) {
     return NextResponse.json({ error: error.message }, { status: 500 });
