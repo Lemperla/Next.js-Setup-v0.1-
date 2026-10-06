@@ -5,8 +5,8 @@ export async function middleware(request: NextRequest) {
   const response = NextResponse.next({ request });
 
   const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    "https://xesvuuunsxsxchmoqvhp.supabase.co",
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inhlc3Z1dXVuc3hzeGNobW9xdmhwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTAwNTM0NDksImV4cCI6MjEwNTYyOTQ0OX0.Bp0EBrVeyWv213R7lnnWw7IL3jI1jzsB5cLTycMWF9A",
     {
       cookies: {
         getAll() {
@@ -26,13 +26,6 @@ export async function middleware(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser();
 
-  // Nicht angemeldet → zum Login, und merken wohin es danach weitergehen soll.
-  //
-  // /scan ist bewusst NICHT mehr ausgenommen: Ohne Anmeldung konnte man das
-  // Formular zwar ausfüllen, aber nicht speichern – die RLS-Regeln lehnen es ab.
-  // Das wäre genau in dem Moment passiert, in dem jemand beim Auto steht und
-  // es eilig hat. Jetzt kommt erst die Anmeldung, danach geht es automatisch
-  // zum gescannten Fahrzeug zurück.
   if (!user && !request.nextUrl.pathname.startsWith("/login")) {
     const url = new URL("/login", request.url);
     url.searchParams.set(
